@@ -1,3 +1,6 @@
 # required ubuntu packages
 libgtkmm-3.0-dev
-pkg-config
+
+
+# potentially required (may already be installed by libgtkmm)
+(pkg-config)
