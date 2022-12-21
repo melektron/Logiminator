@@ -13,6 +13,9 @@ EXECUTABLE = $(RUN_DIR)/main
 
 all: $(SOURCES) $(EXECUTABLE)
 
+start: $(EXECUTABLE)
+	${EXECUTABLE}
+
 # create executable file from all object files
 $(EXECUTABLE): $(OBJECTS)
 	mkdir -p $(RUN_DIR)
