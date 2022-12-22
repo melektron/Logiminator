@@ -66,14 +66,53 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     cr->stroke();
 
     // draw placed lines
-    cr->set_source_rgb(0.8, 0.8, 0.0);
     cr->set_line_width(4);
+
+    bool is_first_line = true;
+    LogicLine last_line;
     for (const auto &line : m_lines)
     {
+        cr->set_source_rgb(0.8, 0.8, 0.0);
         cr->move_to(line.x1, line.y1);
         cr->line_to(line.x2, line.y2);
+        cr->stroke();
+
+        double relxl, relyl, relxn, relyn;
+        relxl = last_line.x2 - last_line.x1;
+        relyl = last_line.y2 - last_line.y1;
+        relxn = line.x2 - line.x1;
+        relyn = line.y2 - line.y1;
+
+        // don't run the next part for the first line, as there
+        // is no previous line to reference
+        if (is_first_line) 
+        {
+            is_first_line = false;
+            last_line = line;
+            continue;
+        }
+
+        /*
+        draw cubic bezier curve connecting the two lines. 
+        The start point at 70% of the last line, 
+        the first control point on the end of the last line.
+        The second control point at the start of the new line,
+        the endpoint 30% into the new line.
+        */
+        cr->set_source_rgb(0.0, 0.4, 0.8);
+        cr->move_to(
+            last_line.x2 - relxl * 0.3,
+            last_line.y2 - relyl * 0.3
+        );
+        cr->curve_to(
+            last_line.x2, last_line.y2,
+            line.x1, line.y1,
+            line.x1 + relxn * 0.3, line.y1 + relyn * 0.3
+        );
+        cr->stroke();
+
+        last_line = line;
     }
-    cr->stroke();
 
     // draw current line
     if (line_active)
