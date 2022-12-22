@@ -7,7 +7,7 @@ www.elektron.work
 
 #include <stdio.h>
 #include <gtkmm/application.h>
-#include "widgettests/widgettests.h"
+#include "widgettests/entry_example.h"
 
 
 int main(int argc, char *argv[])
@@ -15,10 +15,10 @@ int main(int argc, char *argv[])
     auto app = Gtk::Application::create(argc, argv, "work.elektron.gtk_testapp");
 
 
-    WidgetExamples hello_world_window;
+    EntryExample main_window;
 
 
-    int ret = app->run(hello_world_window);
+    int ret = app->run(main_window);
     if (ret == 0)
         printf("OK - exiting ...\n");
     else

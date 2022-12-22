@@ -18,11 +18,11 @@ hello world windows
 #include <gtkmm/box.h>
 
 
-class WidgetExamples : public Gtk::Window
+class ButtonExamples : public Gtk::Window
 {
 public:
-    WidgetExamples();
-    virtual ~WidgetExamples();
+    ButtonExamples();
+    virtual ~ButtonExamples();
 
 protected:
     // == Signal Handlers

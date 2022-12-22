@@ -8,9 +8,9 @@ impl for hello world window
 */
 
 #include <iostream>
-#include "widgettests.h"
+#include "button_examples.h"
 
-WidgetExamples::WidgetExamples()
+ButtonExamples::ButtonExamples()
     : m_container(Gtk::ORIENTATION_VERTICAL),
       m_infolabel("Info"),
       m_getinfo_button("Update Info"),
@@ -35,23 +35,23 @@ WidgetExamples::WidgetExamples()
 
     // attach signal handler to the "clicked" signal
     // of the button
-    m_getinfo_button.signal_clicked().connect(sigc::mem_fun(*this, &WidgetExamples::on_button_change));
-    m_toggle.signal_clicked().connect(sigc::mem_fun(*this, &WidgetExamples::on_button_change));
-    m_check.signal_clicked().connect(sigc::mem_fun(*this, &WidgetExamples::on_button_change));
-    m_rb1.signal_clicked().connect(sigc::mem_fun(*this, &WidgetExamples::on_button_change));
-    m_rb2.signal_clicked().connect(sigc::mem_fun(*this, &WidgetExamples::on_button_change));
-    m_rb3.signal_clicked().connect(sigc::mem_fun(*this, &WidgetExamples::on_button_change));
+    m_getinfo_button.signal_clicked().connect(sigc::mem_fun(*this, &ButtonExamples::on_button_change));
+    m_toggle.signal_clicked().connect(sigc::mem_fun(*this, &ButtonExamples::on_button_change));
+    m_check.signal_clicked().connect(sigc::mem_fun(*this, &ButtonExamples::on_button_change));
+    m_rb1.signal_clicked().connect(sigc::mem_fun(*this, &ButtonExamples::on_button_change));
+    m_rb2.signal_clicked().connect(sigc::mem_fun(*this, &ButtonExamples::on_button_change));
+    m_rb3.signal_clicked().connect(sigc::mem_fun(*this, &ButtonExamples::on_button_change));
 
 
     // display the button
     show_all_children();
 }
 
-WidgetExamples::~WidgetExamples()
+ButtonExamples::~ButtonExamples()
 {
 }
 
-void WidgetExamples::on_button_change()
+void ButtonExamples::on_button_change()
 {
     int btnnr = 0;
     if (m_rb1.get_active()) btnnr = 1;
