@@ -1,10 +1,10 @@
-CC = g++
-CFLAGS = $(shell pkg-config --cflags gtkmm-3.0) -g
-LIBS = $(shell pkg-config --libs gtkmm-3.0) -g
-
 SRC_DIR = src
 OBJ_DIR = obj
 RUN_DIR = run
+
+CC = g++
+CFLAGS = $(shell pkg-config --cflags gtkmm-3.0) -g -I$(SRC_DIR)
+LIBS = $(shell pkg-config --libs gtkmm-3.0) -g
 
 SOURCES = $(shell find $(SRC_DIR) -name '*.cpp')
 OBJECTS_TEMP = $(patsubst %.cpp,%.o,$(SOURCES))

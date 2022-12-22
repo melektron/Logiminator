@@ -7,7 +7,7 @@ www.elektron.work
 
 #include <stdio.h>
 #include <gtkmm/application.h>
-#include "widgettests/entry_example.h"
+#include "windows/main_window.h"
 
 
 int main(int argc, char *argv[])
@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     auto app = Gtk::Application::create(argc, argv, "work.elektron.gtk_testapp");
 
 
-    EntryExample main_window;
+    MainWindow main_window;
 
 
     int ret = app->run(main_window);

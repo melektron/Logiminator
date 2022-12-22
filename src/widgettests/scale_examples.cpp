@@ -1,10 +1,3 @@
-/*
-ELEKTRON © 2022
-Written by melektron
-www.elektron.work
-21.12.22, 19:35
-*/
-
 #include "scale_examples.h"
 #include <iostream>
 

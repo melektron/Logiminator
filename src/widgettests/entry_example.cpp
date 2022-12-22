@@ -1,10 +1,3 @@
-/*
-ELEKTRON © 2022
-Written by melektron
-www.elektron.work
-22.12.22, 09:45
-*/
-
 #include "entry_example.h"
 #include <iostream>
 
