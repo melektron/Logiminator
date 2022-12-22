@@ -8,6 +8,7 @@ www.elektron.work
 #include <stdio.h>
 #include <gtkmm/application.h>
 #include "windows/main_window.h"
+#include "widgettests/scale_examples.h"
 
 
 int main(int argc, char *argv[])
