@@ -39,9 +39,6 @@ protected:
     // flag whether a line has started by clicking
     bool line_active = false;
 
-    // line that is currently being drawn
-    Pair2 m_current_line;
-
     // list of all lines that have been drawn
     std::vector<Pair2> m_lines;
 
