@@ -69,19 +69,13 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     cr->set_line_width(4);
 
     bool is_first_line = true;
-    LogicLine last_line;
+    Pair2 last_line;
     for (const auto &line : m_lines)
     {
         cr->set_source_rgb(0.8, 0.8, 0.0);
-        cr->move_to(line.x1, line.y1);
-        cr->line_to(line.x2, line.y2);
+        cr->move_to(XY(line.first));
+        cr->line_to(XY(line.second));
         cr->stroke();
-
-        double relxl, relyl, relxn, relyn;
-        relxl = last_line.x2 - last_line.x1;
-        relyl = last_line.y2 - last_line.y1;
-        relxn = line.x2 - line.x1;
-        relyn = line.y2 - line.y1;
 
         // don't run the next part for the first line, as there
         // is no previous line to reference
@@ -91,6 +85,13 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
             last_line = line;
             continue;
         }
+        
+
+        Vec2 last_length = last_line.second - last_line.first;
+        Vec2 new_length = line.second - line.first;
+
+        // the portion of the line that is rounded
+        const double line_bezier_portion = 0.3;
 
         /*
         draw cubic bezier curve connecting the two lines. 
@@ -100,16 +101,15 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
         the endpoint 30% into the new line.
         */
         cr->set_source_rgb(0.0, 0.4, 0.8);
-        cr->move_to(
-            last_line.x2 - relxl * 0.3,
-            last_line.y2 - relyl * 0.3
-        );
+        cr->move_to(XY(last_line.second - last_length * 0.3));
         cr->curve_to(
-            last_line.x2, last_line.y2,
-            line.x1, line.y1,
-            line.x1 + relxn * 0.3, line.y1 + relyn * 0.3
+            XY(last_line.second),
+            XY(line.first),
+            XY(line.first + new_length * 0.3)
         );
         cr->stroke();
+
+        std::cout << "last length x" << last_length.getX() << " y" << last_length.getY() << " third x" << (last_length * 0.3).getX() << " y" << (last_length * 0.3).getY() << "\n";
 
         last_line = line;
     }
@@ -118,8 +118,8 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     if (line_active)
     {
         cr->set_source_rgb(0.8, 0.0, 0.8);
-        cr->move_to(m_current_line.x1, m_current_line.y1);
-        cr->line_to(m_current_line.x2, m_current_line.y2);
+        cr->move_to(XY(m_current_line.first));
+        cr->line_to(XY(m_current_line.second));
         cr->stroke();
     }
 
@@ -135,15 +135,12 @@ bool LogicCanvas::on_button_press_event(GdkEventButton *_e)
             if (line_active)
             {
                 // save as endpoint of last line
-                m_current_line.x2 = _e->x;
-                m_current_line.y2 = _e->y;
+                m_current_line.second.setXY(_e->x, _e->y);
                 // add line to permanent lines
                 m_lines.push_back(m_current_line);
                 // start new line at current coordinates
-                m_current_line.x1 = _e->x;
-                m_current_line.y1 = _e->y;
-                m_current_line.x2 = _e->x;
-                m_current_line.y2 = _e->y;
+                m_current_line.first.setXY(_e->x, _e->y);
+                m_current_line.second.setXY(_e->x, _e->y);
                 // update window
                 force_redraw();
             }
@@ -151,10 +148,8 @@ bool LogicCanvas::on_button_press_event(GdkEventButton *_e)
             {
                 // start a line at the current position
                 line_active = true;
-                m_current_line.x1 = _e->x;
-                m_current_line.y1 = _e->y;
-                m_current_line.x2 = _e->x;
-                m_current_line.y2 = _e->y;
+                m_current_line.first.setXY(_e->x, _e->y);
+                m_current_line.second.setXY(_e->x, _e->y);
                 // update window
                 force_redraw();
             }
@@ -164,8 +159,7 @@ bool LogicCanvas::on_button_press_event(GdkEventButton *_e)
             if (line_active)
             {
                 // save as endpoint of last line
-                m_current_line.x2 = _e->x;
-                m_current_line.y2 = _e->y;
+                m_current_line.second.setXY(_e->x, _e->y);
                 // add line to permanent lines
                 m_lines.push_back(m_current_line);
                 // disable line drawing (don't start new line)
@@ -191,8 +185,7 @@ bool LogicCanvas::on_motion_notify_event(GdkEventMotion *_e)
     // update the active line if needed
     if (line_active)
     {
-        m_current_line.x2 = _e->x;
-        m_current_line.y2 = _e->y;
+        m_current_line.second.setXY(_e->x, _e->y);
         force_redraw();
     }
     return true;

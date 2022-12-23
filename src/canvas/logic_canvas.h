@@ -12,6 +12,7 @@ Drawing area Widget responsible for drawing and showing the logic circuit
 
 #include <gtkmm/drawingarea.h>
 #include <vector>
+#include "utils/vec.h"
 
 
 
@@ -38,16 +39,10 @@ protected:
     // flag whether a line has started by clicking
     bool line_active = false;
 
-    // Structure representing a line
-    struct LogicLine
-    {
-        double x1, y1, x2, y2;
-    };
-
     // line that is currently being drawn
-    LogicLine m_current_line;
+    Pair2 m_current_line;
 
     // list of all lines that have been drawn
-    std::vector<LogicLine> m_lines;
+    std::vector<Pair2> m_lines;
 
 };

@@ -15,6 +15,7 @@ MainWindow::MainWindow()
     : m_l1_columns(Gtk::ORIENTATION_HORIZONTAL)
 {
     set_title("Logiminator");
+    set_default_size(600, 400);
 
     set_border_width(10);
 
