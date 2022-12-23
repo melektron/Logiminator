@@ -11,7 +11,6 @@ points
 
 #pragma once
 
-
 // A cartesian coordinate (x and y values)
 struct Cart
 {
@@ -43,6 +42,7 @@ protected:
     void update_polar_from_cart();
     // updates contained cartesian value from polar value
     void update_cart_from_polar();
+
 public:
     // default constructor init all to 0
     Vec2() = default;
@@ -54,10 +54,10 @@ public:
     static Vec2 fromXY(double _x, double _y);
     // creates Vec2 from raw polar values
     static Vec2 fromRPhi(double _r, double _phi);
-    
+
     // might be required for inheritance
     virtual ~Vec2();
-    
+
     // == raw value getters
     double getX() const;
     double getY() const;
@@ -82,4 +82,27 @@ public:
     operator Cart() const;
     operator Polar() const;
 
+    // == mathematical operations
+    // = addition and subtraction
+    // vector addition: separately adds x and y values
+    Vec2 operator+(const Vec2 &_rhs) const;
+    // scalar addition: increases the vector's length by the given number
+    Vec2 operator+(double _rhs) const;
+    // numeric addition: adds the length of the vector to the number
+    friend double operator+(double _lhs, const Vec2 &_rhs);
+    // vector subtraction: separately subtracts x and y values
+    Vec2 operator-(const Vec2 &_rhs) const;
+    // scalar subtraction: reduces the vector's length by the given number
+    Vec2 operator-(double _rhs) const;
+    // numeric subtraction: subtracts the length of the vector from the number
+    friend double operator-(double _lhs, const Vec2 &_rhs);
+    // = multiplication and division
+    // scalar multiplication: multiplies the length of the vector with the number
+    Vec2 operator*(double _rhs) const;
+    // numeric multiplication: multiplies the number with the length of the vector
+    friend double operator*(double _lhs, const Vec2 &_rhs);
+    // scalar division: divides the length of the vector by the number
+    Vec2 operator/(double _rhs) const;
+    // numeric division: divides the number by the length of the vector
+    friend double operator/(double _lhs, const Vec2 &_rhs);
 };

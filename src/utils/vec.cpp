@@ -101,6 +101,66 @@ const Polar &Vec2::getRad() const { return m_polar; }
 Vec2::operator Cart() const { return m_cartesian; }
 Vec2::operator Polar() const { return m_polar; }
 
+
+Vec2 Vec2::operator+(const Vec2 &_rhs) const
+{
+    return Cart(
+        m_cartesian.x + _rhs.m_cartesian.x,
+        m_cartesian.y + _rhs.m_cartesian.y
+    );
+}
+Vec2 Vec2::operator+(double _rhs) const
+{
+    return Polar(
+        m_polar.r + _rhs,
+        m_polar.phi
+    );
+}
+double operator+(double _lhs, const Vec2 &_rhs) // friend
+{
+    return _lhs + _rhs.m_polar.r;
+}
+Vec2 Vec2::operator-(const Vec2 &_rhs) const
+{
+    return Cart(
+        m_cartesian.x - _rhs.m_cartesian.x,
+        m_cartesian.y - _rhs.m_cartesian.y
+    );
+}
+Vec2 Vec2::operator-(double _rhs) const
+{
+    return Polar(
+        m_polar.r - _rhs,
+        m_polar.phi
+    );
+}
+double operator-(double _lhs, const Vec2 &_rhs) // friend
+{
+    return _lhs - _rhs.m_polar.r;
+}
+Vec2 Vec2::operator*(double _rhs) const
+{
+    return Polar(
+        m_polar.r * _rhs,
+        m_polar.phi
+    );
+}
+double operator*(double _lhs, const Vec2 &_rhs)
+{
+    return _lhs * _rhs.m_polar.r;
+}
+Vec2 Vec2::operator/(double _rhs) const
+{
+    return Polar(
+        m_polar.r / _rhs,
+        m_polar.phi
+    );
+}
+double operator/(double _lhs, const Vec2 &_rhs)
+{
+    return _lhs / _rhs.m_polar.r;
+}
+
 void Vec2::update_polar_from_cart()
 {
     m_polar.r = std::sqrt(
