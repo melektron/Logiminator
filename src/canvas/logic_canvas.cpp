@@ -7,10 +7,11 @@ www.elektron.work
 Drawing area Widget responsible for drawing and showing the logic circuit
 */
 
-#include "logic_canvas.h"
 #include <cairomm/context.h>
 #include <gdkmm/event.h>
 #include <iostream>
+#include "logic_canvas.h"
+#include "utils/bezier.h"
 
 LogicCanvas::LogicCanvas()
 {
@@ -65,13 +66,13 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     cr->line_to(width -10, yc);
     cr->stroke();
 
-    // draw placed lines
-    cr->set_line_width(4);
 
     bool is_first_line = true;
     Pair2 last_line;
     for (const auto &line : m_lines)
     {
+        // draw placed lines
+        cr->set_line_width(4);
         cr->set_source_rgb(0.8, 0.8, 0.0);
         cr->move_to(XY(line.first));
         cr->line_to(XY(line.second));
@@ -109,7 +110,16 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
         );
         cr->stroke();
 
-        std::cout << "last length x" << last_length.getX() << " y" << last_length.getY() << " third x" << (last_length * 0.3).getX() << " y" << (last_length * 0.3).getY() << "\n";
+        
+        cr->set_line_width(1);
+        cr->set_source_rgb(1.0, 0.3, 0.0);
+        bezier::quadratic(
+            cr,
+            last_line.second - last_length * 0.3,
+            last_line.second,
+            line.first + new_length * 0.3
+        );
+        cr->stroke();
 
         last_line = line;
     }
@@ -117,6 +127,7 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     // draw current line
     if (line_active)
     {
+        cr->set_line_width(4);
         cr->set_source_rgb(0.8, 0.0, 0.8);
         cr->move_to(XY(m_current_line.first));
         cr->line_to(XY(m_current_line.second));
