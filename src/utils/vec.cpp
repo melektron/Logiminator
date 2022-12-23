@@ -166,10 +166,10 @@ void Vec2::update_polar_from_cart()
     m_polar.r = std::sqrt(
         std::pow(m_cartesian.x, 2) + std::pow(m_cartesian.y, 2)
     );
-    m_polar.phi = std::atan(m_cartesian.y / m_cartesian.x);
+    m_polar.phi = std::atan2(m_cartesian.y, m_cartesian.x);
 }
 void Vec2::update_cart_from_polar()
 {
     m_cartesian.x = m_polar.r * std::cos(m_polar.phi);
     m_cartesian.y = m_polar.r * std::sin(m_polar.phi);
-}
+}   

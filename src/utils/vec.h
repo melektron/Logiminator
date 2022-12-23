@@ -56,7 +56,7 @@ public:
     static Vec2 fromRPhi(double _r, double _phi);
 
     // might be required for inheritance
-    virtual ~Vec2();
+    virtual ~Vec2() = default;
 
     // == raw value getters
     double getX() const;
@@ -105,4 +105,22 @@ public:
     Vec2 operator/(double _rhs) const;
     // numeric division: divides the number by the length of the vector
     friend double operator/(double _lhs, const Vec2 &_rhs);
+};
+
+// macro to convert vector to a pair of arguments (x, y) for gtkmm calls
+#define XY(vector) (vector).getX(), (vector).getY()
+
+
+/**
+ * @brief a pair of Vec2s that can be used to represent lines,
+ * rectangles, circles, ...
+ * Usually, the first vector is the start point of a line or one corner
+ * of a rectangle and the other vector defines the end point of the line or
+ * the opposite corner of the rectangle. Sometimes, the second coordinate is
+ * also used to specify the width and height of the rectangle or line.
+ * 
+ */
+struct Pair2
+{
+    Vec2 first, second;
 };
