@@ -87,37 +87,23 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
             continue;
         }
         
-
-        Vec2 last_length = last_line.second - last_line.first;
-        Vec2 new_length = line.second - line.first;
-
-        // the portion of the line that is rounded
+        // maximum the relative portion of the line that is rounded when the line is short
         const double line_bezier_portion = 0.3;
+        // the absolute amount of pixels of the line that are rounded when the line is long
+        const double max_bezier_width = 30; // px
+        // calculate the proportional values
+        Vec2 last_bezier_width = (last_line.second - last_line.first) * line_bezier_portion;
+        Vec2 new_bezier_width = (line.second - line.first) * line_bezier_portion;
+        // constrain the proportional bezier width to the maximum value
+        last_bezier_width.setR(std::min(last_bezier_width.getR(), max_bezier_width));
+        new_bezier_width.setR(std::min(new_bezier_width.getR(), max_bezier_width));
 
-        /*
-        draw cubic bezier curve connecting the two lines. 
-        The start point at 70% of the last line, 
-        the first control point on the end of the last line.
-        The second control point at the start of the new line,
-        the endpoint 30% into the new line.
-        */
-        cr->set_source_rgb(0.0, 0.4, 0.8);
-        cr->move_to(XY(last_line.second - last_length * 0.3));
-        cr->curve_to(
-            XY(last_line.second),
-            XY(line.first),
-            XY(line.first + new_length * 0.3)
-        );
-        cr->stroke();
-
-        
-        cr->set_line_width(1);
         cr->set_source_rgb(1.0, 0.3, 0.0);
         bezier::quadratic(
             cr,
-            last_line.second - last_length * 0.3,
+            last_line.second - last_bezier_width,
             last_line.second,
-            line.first + new_length * 0.3
+            line.first + new_bezier_width
         );
         cr->stroke();
 
