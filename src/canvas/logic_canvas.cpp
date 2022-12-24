@@ -19,13 +19,14 @@ LogicCanvas::LogicCanvas()
     add_events(Gdk::BUTTON_PRESS_MASK);
     add_events(Gdk::BUTTON_RELEASE_MASK);
     add_events(Gdk::POINTER_MOTION_MASK);
+    add_events(Gdk::SCROLL_MASK);
 }
 
 LogicCanvas::~LogicCanvas()
 {
 }
 
-void LogicCanvas::force_redraw()
+void LogicCanvas::forceRedraw()
 {
     // get window ref
     auto win = get_window();
@@ -44,25 +45,14 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     const int width = allocation.get_width();
     const int height = allocation.get_height();
 
-    // coordinates for the center of the window
-    int xc, yc;
-    xc = width / 2;
-    yc = height / 2;
-
-    cr->set_line_width(10.0);
+    // setup line styles
     cr->set_line_join(Cairo::LineJoin::LINE_JOIN_ROUND);
     cr->set_line_cap(Cairo::LineCap::LINE_CAP_ROUND);
 
-    // draw example lines
-    cr->set_source_rgb(0.8, 0.0, 0.0);
-    if (line_active)
-        cr->set_source_rgb(0.0, 0.8, 0.0);
-    cr->move_to(10, 10);
-    cr->line_to(xc, yc);
-    cr->line_to(10, height - 10);
-    cr->move_to(xc, yc);
-    cr->line_to(width - 10, yc);
-    cr->stroke();
+    // set the translation
+    cr->translate(XY(m_view_translation));
+    cr->scale(m_view_scale, m_view_scale);
+
 
     bool is_first_line = true;
     Pair2 last_line;
@@ -123,41 +113,42 @@ bool LogicCanvas::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 bool LogicCanvas::on_button_press_event(GdkEventButton *_e)
 {
     // std::cout << "D: " << _e->x << " " << _e->y << " " << _e->button << "\n";
+    Vec2 location = (Vec2::fromXY(_e->x, _e->y) - m_view_translation) / m_view_scale;
     switch (_e->button)
     {
     case 1: // left mouse button
-        if (line_active)
+        if (m_line_active)
         {
             // save as endpoint of last line
-            m_lines.back().second.setXY(_e->x, _e->y);
+            m_lines.back().second = location;
             // add new line
             m_lines.emplace_back();
             // start new line at current coordinates
-            m_lines.back().first.setXY(_e->x, _e->y);
-            m_lines.back().second.setXY(_e->x, _e->y);
+            m_lines.back().first = location;
+            m_lines.back().second = location;
             // update window
-            force_redraw();
+            forceRedraw();
         }
         else
         {
             // start a line at the current position
-            line_active = true;
+            m_line_active = true;
             m_lines.emplace_back();
-            m_lines.back().first.setXY(_e->x, _e->y);
-            m_lines.back().second.setXY(_e->x, _e->y);
+            m_lines.back().first = location;
+            m_lines.back().second = location;
             // update window
-            force_redraw();
+            forceRedraw();
         }
         break;
 
     case 3: // right mouse button
-        if (line_active)
+        if (m_line_active)
         {
             // save as endpoint of last line
-            m_lines.back().second.setXY(_e->x, _e->y);
+            m_lines.back().second = location;
             // disable line drawing (don't start new line)
-            line_active = false;
-            force_redraw();
+            m_line_active = false;
+            forceRedraw();
         }
         break;
 
@@ -174,11 +165,37 @@ bool LogicCanvas::on_button_release_event(GdkEventButton *_e)
 }
 bool LogicCanvas::on_motion_notify_event(GdkEventMotion *_e)
 {
+    Vec2 location = (Vec2::fromXY(_e->x, _e->y) - m_view_translation) / m_view_scale;
     // update the active line if needed
-    if (line_active)
+    if (m_line_active)
     {
-        m_lines.back().second.setXY(_e->x, _e->y);
-        force_redraw();
+        m_lines.back().second = location;
+        forceRedraw();
     }
+    return true;
+}
+bool LogicCanvas::on_scroll_event(GdkEventScroll *_e)
+{
+    printf("scroll at x%4lf y%4lf: %1d (mods: %1d)\n", _e->x, _e->y, _e->direction, _e->state);
+    switch (_e->direction)
+    {
+    case GdkScrollDirection::GDK_SCROLL_UP:
+        m_view_translation.setY(m_view_translation.getY() + 5);
+        break;
+    case GdkScrollDirection::GDK_SCROLL_DOWN:
+        m_view_translation.setY(m_view_translation.getY() - 5);
+        break;
+    case GdkScrollDirection::GDK_SCROLL_LEFT:
+        m_view_translation.setX(m_view_translation.getX() + 5);
+        break;
+    case GdkScrollDirection::GDK_SCROLL_RIGHT:
+        m_view_translation.setX(m_view_translation.getX() - 5);
+        break;
+    
+    // only redraw window if translation changed
+    default:
+        return true;
+    }
+    forceRedraw();
     return true;
 }
