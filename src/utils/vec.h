@@ -86,12 +86,14 @@ public:
     // = addition and subtraction
     // vector addition: separately adds x and y values
     Vec2 operator+(const Vec2 &_rhs) const;
+    Vec2 &operator+=(const Vec2 &_rhs);
     // scalar addition: increases the vector's length by the given number
     Vec2 operator+(double _rhs) const;
     // numeric addition: adds the length of the vector to the number
     friend double operator+(double _lhs, const Vec2 &_rhs);
     // vector subtraction: separately subtracts x and y values
     Vec2 operator-(const Vec2 &_rhs) const;
+    Vec2 &operator-=(const Vec2 &_rhs);
     // scalar subtraction: reduces the vector's length by the given number
     Vec2 operator-(double _rhs) const;
     // numeric subtraction: subtracts the length of the vector from the number

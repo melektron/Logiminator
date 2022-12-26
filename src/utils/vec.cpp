@@ -109,6 +109,13 @@ Vec2 Vec2::operator+(const Vec2 &_rhs) const
         m_cartesian.y + _rhs.m_cartesian.y
     );
 }
+Vec2 &Vec2::operator+=(const Vec2 &_rhs)
+{
+    m_cartesian.x += _rhs.m_cartesian.x;
+    m_cartesian.y += _rhs.m_cartesian.y;
+    update_polar_from_cart();
+    return *this;
+}
 Vec2 Vec2::operator+(double _rhs) const
 {
     return Polar(
@@ -126,6 +133,13 @@ Vec2 Vec2::operator-(const Vec2 &_rhs) const
         m_cartesian.x - _rhs.m_cartesian.x,
         m_cartesian.y - _rhs.m_cartesian.y
     );
+}
+Vec2 &Vec2::operator-=(const Vec2 &_rhs)
+{
+    m_cartesian.x -= _rhs.m_cartesian.x;
+    m_cartesian.y -= _rhs.m_cartesian.y;
+    update_polar_from_cart();
+    return *this;
 }
 Vec2 Vec2::operator-(double _rhs) const
 {
