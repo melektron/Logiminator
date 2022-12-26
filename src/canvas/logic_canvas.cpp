@@ -141,7 +141,7 @@ bool LogicCanvas::on_button_press_event(GdkEventButton *_e)
         }
         break;
 
-    case 3: // right mouse button
+    case 2: // middle mouse button
         if (m_line_active)
         {
             // save as endpoint of last line
@@ -152,7 +152,7 @@ bool LogicCanvas::on_button_press_event(GdkEventButton *_e)
         }
         break;
     
-    case 2: // middle mouse button
+    case 3: // right mouse button
         m_view_shift_active = true;
         m_view_shift_starting_point = location;
         break;
@@ -169,7 +169,7 @@ bool LogicCanvas::on_button_release_event(GdkEventButton *_e)
     Vec2 location = screenCoordsToRenderCoords(Vec2::fromXY(_e->x, _e->y));
     switch (_e->button)
     {
-    case 2: // middle mouse button
+    case 3: // right mouse button
         m_view_shift_active = false;
         break;
     
@@ -181,26 +181,33 @@ bool LogicCanvas::on_button_release_event(GdkEventButton *_e)
 }
 bool LogicCanvas::on_motion_notify_event(GdkEventMotion *_e)
 {
-    // convert to render coordinates
+    bool redraw_needed = false;
+    // get render coordinates
     Vec2 location = screenCoordsToRenderCoords(Vec2::fromXY(_e->x, _e->y));
     //printf("mouse   : x%4lf y%4lf\n", location.getX(), location.getY());
 
-    // update the active line if needed
-    if (m_line_active)
-    {
-        m_lines.back().second = location;
-        forceRedraw();
-    }
     // update view translation if needed
-    else if (m_view_shift_active)
+    if (m_view_shift_active)
     {
         // "location" is the coordinate that the cursor is currently located at
         // "m_view_shift_starting_point" is the coordinate that should be at the cursor location.
         // we calculate the offset and add it to the translation so the error is resolved
         Vec2 correction_offset = location - m_view_shift_starting_point;
         m_view_translation += correction_offset;
-        forceRedraw();
+        // update the location so following operations in the function have up-to-date data
+        location = screenCoordsToRenderCoords(Vec2::fromXY(_e->x, _e->y));
+        redraw_needed = true;
     }
+    // update the active line if needed
+    if (m_line_active)
+    {
+        m_lines.back().second = location;
+        redraw_needed = true;
+    }
+
+    // redraw if needed
+    if (redraw_needed)
+        forceRedraw();
     return true;
 }
 bool LogicCanvas::on_scroll_event(GdkEventScroll *_e)
